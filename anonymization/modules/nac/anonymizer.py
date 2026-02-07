@@ -26,7 +26,7 @@ class Anonymizer(torch.nn.Module):
         # 1. initialize Bark
         config = BarkConfig()  # don't change the custom config for the love of god
         self.model = Bark.init_from_config(config)
-        self.model.load_checkpoint(config, checkpoint_dir=checkpoint_dir, eval=True)
+        self.model.load_checkpoint(config, checkpoint_dir=checkpoint_dir, eval=True, weights_only=False)
         # self.model.to('cuda')
 
         # 2. initialize the awesome, bark-distilled, unlikely-yet-functioning audio tokenizer
