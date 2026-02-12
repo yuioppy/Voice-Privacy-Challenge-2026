@@ -505,7 +505,7 @@ def main() -> None:
     parser.add_argument(
         "--source-dir",
         type=Path,
-        default=Path("../corpora/cn/test"),
+        default=Path("../corpora/cn/"),
         help="Path to the CN subset directory containing `content.txt` and `wav/`.",
     )
     parser.add_argument(
@@ -529,7 +529,7 @@ def main() -> None:
     parser.add_argument(
         "--data-dir",
         type=Path,
-        default=Path("../data/cn"),
+        default=Path("../corpora/cn"),
         help="Root output directory for the Kaldi maps (text, wav.scp, ...).",
     )
     parser.add_argument(
@@ -613,25 +613,25 @@ def main() -> None:
     parser.add_argument(
         "--dev-female-count",
         type=int,
-        default=15,
+        default=20,
         help="Number of female speakers for dev set (default: 15).",
     )
     parser.add_argument(
         "--dev-male-count",
         type=int,
-        default=15,
+        default=20,
         help="Number of male speakers for dev set (default: 15).",
     )
     parser.add_argument(
         "--test-female-count",
         type=int,
-        default=15,
+        default=20,
         help="Number of female speakers for test set (default: 15).",
     )
     parser.add_argument(
         "--test-male-count",
         type=int,
-        default=15,
+        default=20,
         help="Number of male speakers for test set (default: 15).",
     )
     parser.add_argument(
@@ -649,14 +649,14 @@ def main() -> None:
     parser.add_argument(
         "--total-female-count",
         type=int,
-        default=30,
+        default=40,
         help="Total number of female speakers to select. If > 0, limits selection to top N by utterance count. "
              "Used with --split-dev-test or standalone (default: 0 = use all).",
     )
     parser.add_argument(
         "--total-male-count",
         type=int,
-        default=30,
+        default=40,
         help="Total number of male speakers to select. If > 0, limits selection to top N by utterance count. "
              "Used with --split-dev-test or standalone (default: 0 = use all).",
     )
