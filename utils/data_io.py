@@ -4,7 +4,8 @@ import json
 import pandas as pd
 import logging
 
-import torchaudio
+import torch
+import soundfile as sf
 import io
 import os
 import subprocess
@@ -41,6 +42,8 @@ def load_wav_from_scp(wav, frame_offset: int = 0,  num_frames: int = -1):
 
     Args:
         wav: a list containing the scp entry
+        frame_offset: starting frame (default: 0)
+        num_frames: number of frames to read (-1 for all, default: -1)
 
     Returns:
         out_feats: torch.tensor array dtype float32 (default)
@@ -53,14 +56,34 @@ def load_wav_from_scp(wav, frame_offset: int = 0,  num_frames: int = -1):
             wav_read_process = subprocess.Popen(
                 wav.strip()[:-1], stdout=subprocess.PIPE, shell=True, stderr=devnull
             )
-            sample, sr = torchaudio.backend.soundfile_backend.load(
-                io.BytesIO(wav_read_process.communicate()[0]),
-                frame_offset=frame_offset, num_frames=num_frames
-            )
+            wav_data = wav_read_process.communicate()[0]
+            # Use soundfile to read from BytesIO
+            with io.BytesIO(wav_data) as wav_io:
+                # soundfile uses 'start' for frame_offset and 'frames' for num_frames
+                sample, sr = sf.read(
+                    wav_io,
+                    start=frame_offset,
+                    frames=num_frames if num_frames > 0 else -1,
+                    dtype='float32',
+                    always_2d=False
+                )
         except Exception as e:
             raise IOError("Error processing wav file: {}\n{}".format(wav, e))
     else:
-        sample, sr = torchaudio.backend.soundfile_backend.load(wav, frame_offset=frame_offset, num_frames=num_frames)
+        # Use soundfile to read from file path
+        sample, sr = sf.read(
+            wav,
+            start=frame_offset,
+            frames=num_frames if num_frames > 0 else -1,
+            dtype='float32',
+            always_2d=False
+        )
+    
+    # Convert numpy array to torch tensor
+    # Ensure 2D shape: (channels, samples) for compatibility with torchaudio format
+    if sample.ndim == 1:
+        sample = sample.reshape(1, -1)
+    sample = torch.from_numpy(sample).float()
 
     return sample, sr
 

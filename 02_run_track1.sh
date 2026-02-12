@@ -32,6 +32,8 @@ eval_overwrite="{"
 anon_suffix=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('${anon_config}'); print(load_hyperpyyaml(f, None).get('anon_suffix', ''))")
 if [[ $anon_suffix ]]; then
   eval_overwrite="$eval_overwrite \"anon_data_suffix\": \"$anon_suffix\"}"
+else
+  eval_overwrite="$eval_overwrite}"
 fi
 
 # Generate anonymized audio (libri dev+test set & IEMOCAP dev+test set & libri-360h)
@@ -39,11 +41,11 @@ echo python run_anonymization.py --config ${anon_config} ${force_compute}
 python run_anonymization.py --config ${anon_config} ${force_compute}
 
 # Perform libri dev+test & IEMOCAP dev+test pre evaluation using pretrained ASR/ASV/SER models
-python run_evaluation.py --config $(dirname ${anon_config})/$track1/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
+python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # # Train post ASV using anonymized libri-360 and perform libri dev+test post evaluation
 # # ASV training takes ~2hours
-python run_evaluation.py --config $(dirname ${anon_config})/$track1/eval_post.yaml --overwrite "${eval_overwrite}" ${force_compute}
+python run_evaluation.py --config $(dirname ${anon_config})/eval_post.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # # Merge results
 results_summary_path_orig=$(python3 -c "from hyperpyyaml import load_hyperpyyaml; f = open('$(dirname ${anon_config})/eval_pre.yaml'); print(load_hyperpyyaml(f, ${eval_overwrite}).get('results_summary_path', ''))")
