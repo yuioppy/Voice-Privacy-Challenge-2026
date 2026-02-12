@@ -130,6 +130,7 @@ fi
 
 trainlist=train-clean-360-5
 if [ ! -d "data/${trainlist}" ]; then
+    cd data/
     if [ ! -f .train360list.zip ]; then
         echo "Download train-clean-360-list..."
         wget -O train360list.zip https://duke.app.box.com/shared/static/ixxjlcjndsxj4dwolz24crw3ksn8j5z4
@@ -137,6 +138,7 @@ if [ ! -d "data/${trainlist}" ]; then
     fi
     echo "Unpacking train-clean-360-list"
     unzip .train360list.zip
+    cd ../
 fi
 
 
