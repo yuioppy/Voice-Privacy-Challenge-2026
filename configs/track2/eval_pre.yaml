@@ -65,7 +65,7 @@ privacy:
   asv:
     dataset_name: [en_dev, en_test, de_dev, de_test, fr_dev, fr_test, es_dev, es_test, cn_dev, cn_test, ja_dev, ja_test]
     model_name: asv_ssl
-    model_type: sslecapa
+    model_type: ecapa_ssl
 
     evaluation:
       model_dir: !ref <exp_dir>/<privacy[asv][model_name]>  # path to existing ASV model or output for trained ASV model
