@@ -99,15 +99,25 @@ def normalize_wave(wave, sr, device):
     dur = wave.shape[1] / sr
     wave = wave.squeeze().cpu().numpy()
 
-    # normalize loudness
-    try:
-        meter = pyln.Meter(sr, block_size=min(dur - 0.0001, abs(dur - 0.1)) if dur < 0.4 else 0.4)
-        loudness = meter.integrated_loudness(wave)
-        loud_normed = pyln.normalize.loudness(wave, loudness, -30.0)
-        peak = np.amax(np.abs(loud_normed))
-        norm_wave = np.divide(loud_normed, peak)
-    except ZeroDivisionError:
-        norm_wave = wave
+    # normalize loudness (skip for very short or silent audio to avoid pyln errors)
+    norm_wave = wave
+    peak_abs = np.amax(np.abs(wave))
+    if peak_abs > 0 and dur >= 0.02:
+        try:
+            # block_size must be positive and < dur; pyln often needs >= 0.1 for stability
+            block_size = min(0.4, max(0.1, dur - 1e-6))
+            meter = pyln.Meter(sr, block_size=block_size)
+            loudness = meter.integrated_loudness(wave)
+            if np.isfinite(loudness):
+                loud_normed = pyln.normalize.loudness(wave, loudness, -30.0)
+                peak = np.amax(np.abs(loud_normed))
+                if peak > 0:
+                    norm_wave = np.divide(loud_normed, peak)
+        except (ZeroDivisionError, ValueError, Exception) as e:
+            logger.debug("Loudness normalization failed (%s), using peak norm", e)
+            norm_wave = wave / peak_abs
+    elif peak_abs > 0:
+        norm_wave = wave / peak_abs
 
     wave = torch.Tensor(norm_wave).to(device)
 
