@@ -170,7 +170,7 @@ class ECAPA_TDNN_test(torch.nn.Module):
         se_channels=128,
         global_context=True,
         groups=[1, 1, 1, 1, 1],
-        dropout=0.0,
+        dropout=0.3,
         # weighted_sum_initial_weights=None,
         # weighted_sum_layer_emphasis=None,
     ):
