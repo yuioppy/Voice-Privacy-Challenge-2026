@@ -53,7 +53,7 @@ utility:
   asr:
     dataset_name: [libri_dev, libri_test, IEMOCAP_dev, IEMOCAP_test]
     model_name: asr # name for ASR model, asr_pre_transformer_transformerlm + EncoderDecoderASR or asr_pre_ctc_wav2vec2 + EncoderASR
-
+    backend: speechbrain
     evaluation:
       model_type: EncoderASR # EncoderDecoderASR or EncoderASR (from speechbrain)
       # hparams_file: hyperparams.yaml # Check the 'model_dir' config yaml file, default to 'hyperparams.yaml'
