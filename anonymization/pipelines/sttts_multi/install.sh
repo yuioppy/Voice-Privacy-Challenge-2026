@@ -20,7 +20,7 @@ MAMBA_CORE_PACKAGES="sshpass OpenSSH sox libflac tar libacl inotify-tools git-lf
 # Optional packages that may have link script issues (will be installed separately or skipped)
 MAMBA_OPTIONAL_PACKAGES="ocl-icd-system nvtop ffmpeg"
 
-ESPAK_VERSION=1.51.1
+ESPAK_VERSION=1.52.0
 CUDA_VERSION=12.8
 TORCH_VERSION=2.8.0
 
@@ -159,13 +159,16 @@ if [ ! -f $mark ]; then
   sed -i "58d" src/libespeak-ng/speech.h
   sed -i "59d" src/libespeak-ng/speech.h
 
-  ./configure
+  ./configure --prefix ${venv_dir}
   make -j $nj src/espeak-ng src/speak-ng
   make -j $nj
 
   make DESTDIR="$venv_dir" install
 
   yes | cp -rf ${venv_dir}/usr/local/* ${venv_dir} || true
+
+  echo "export ESPEAK_DATA_PATH=$venv_dir/share/espeak-ng-data" >> $env_sh
+  source ./$env_sh
 
   # espeak-ng --voices
   pip3 install phonemizer
