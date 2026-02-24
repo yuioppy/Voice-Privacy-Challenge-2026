@@ -41,8 +41,8 @@ class WhisperASR:
         text = self.utt_start_token + text.strip() + self.utt_end_token
         return text
 
-    def recognize_speech_of_dataset(self, audio_dataset, out_dir, save_intermediate=True, job_id=None, lang=None):
-        texts = Text(is_phones=(self.output == 'phones'))
+    def recognize_speech_of_dataset(self, audio_dataset, text_instance, out_dir, save_intermediate=True, job_id=None, lang=None):
+        texts = text_instance
 
         if len(audio_dataset) == 0:
             return texts

@@ -44,12 +44,32 @@ class ASRDataset(torch.utils.data.Dataset):
 
 def run_process(params):
     utt2spk, wav_scp, already_recognized_utts, utterance_list, asr_model, out_dir, save_intermediate, \
-        lang, sleep, job_id = params
+        utt2lang, sleep, job_id = params
     time.sleep(sleep)
-    asr_dataset = ASRDataset(utt2spk=utt2spk, wav_scp=wav_scp, already_recognized_utts=already_recognized_utts,
-                             utterance_list=utterance_list)
-    return asr_model.recognize_speech_of_dataset(asr_dataset, out_dir=out_dir, save_intermediate=save_intermediate,
-                                                 job_id=job_id, lang=lang)
+    langs = set(utt2lang.values()) if not utt2lang is None else []
+    if len(langs) > 1:
+        # Whisper does not support mixed-language batches, so we perform ASR for each language separately
+        texts = Text(is_phones=(asr_model.output == 'phones'))
+        for lang in langs:
+            asr_dataset = create_lang_specific_dataset(lang=lang, utt2lang=utt2lang, utt2spk=utt2spk, wav_scp=wav_scp,
+                                                       already_recognized_utts=already_recognized_utts,
+                                                       utterance_list=utterance_list)
+            texts = asr_model.recognize_speech_of_dataset(asr_dataset, text_instance=texts, out_dir=out_dir,
+                                                          save_intermediate=save_intermediate, job_id=job_id, lang=lang)
+        return texts
+    else:
+        asr_dataset = ASRDataset(utt2spk=utt2spk, wav_scp=wav_scp, already_recognized_utts=already_recognized_utts,
+                                 utterance_list=utterance_list)
+        lang = langs.pop() if langs else None
+        texts = Text(is_phones=(asr_model.output == 'phones'))
+        return asr_model.recognize_speech_of_dataset(asr_dataset, text_instance=texts, out_dir=out_dir,
+                                                     save_intermediate=save_intermediate, job_id=job_id, lang=lang)
+
+def create_lang_specific_dataset(lang, utt2lang, utt2spk, wav_scp, already_recognized_utts, utterance_list):
+    lang_utts = [utt for utt, l in utt2lang.items() if l == lang]
+    lang_utt2spk = {utt: spk for utt, spk in utt2spk.items() if utt in lang_utts}
+    return ASRDataset(utt2spk=lang_utt2spk, wav_scp=wav_scp, already_recognized_utts=already_recognized_utts,
+                      utterance_list=utterance_list)
 
 
 class SpeechRecognition:
@@ -107,16 +127,18 @@ class SpeechRecognition:
             logger.info(f'Recognize speech of {len(utt2spk) - len(texts)} utterances...')
             wav_scp = read_kaldi_format(dataset_path / 'wav.scp')
             if self.gold_langs:
-                # Each dataset contains audios in only one language, we can read this language from the path name
-                lang = self._extract_lang_from_path(list(wav_scp.values())[0])
+                if (dataset_path / 'utt2lang').exists():
+                    utt2lang = read_kaldi_format(dataset_path / 'utt2lang')
+                else:
+                    utt2lang = {utt: self._extract_lang_from_path(wav_path) for utt, wav_path in wav_scp.items()}
             else:
-                lang = None
+                utt2lang = None
 
             save_intermediate = self.save_intermediate and not utterance_list
             start = time.time()
             if self.n_processes == 1:
                 params = [utt2spk, wav_scp, texts.utterances, utterance_list, self.asr_models[0],
-                          dataset_results_dir, save_intermediate, lang, 0, None]
+                          dataset_results_dir, save_intermediate, utt2lang, 0, None]
                 new_texts = [run_process(params)]
             else:
                 sleeps = [10 * i for i in range(self.n_processes)]
@@ -129,7 +151,7 @@ class SpeechRecognition:
                              self.asr_models, # asr model
                              repeat(dataset_results_dir),  # out_dir
                              repeat(save_intermediate),  # whether to save intermediate results
-                             repeat(lang),  # whether to use gold languages or recognize lang from audio
+                             repeat(utt2lang),  # whether to use gold languages or recognize lang from audio
                              sleeps, # avoid starting all processes at same time
                              list(range(self.n_processes))) # job_id
                 new_texts = process_map(run_process, params, max_workers=self.n_processes)
