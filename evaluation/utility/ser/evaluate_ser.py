@@ -83,8 +83,11 @@ def _eval_ser_speechbrain(eval_datasets, eval_data_dir, models_path, anon_data_s
                 continue
             uar = round(recall_score(y_true=ref, y_pred=hyp, average="macro") * 100, 3)
             score_per_emo = {f"ACC_{k}": round(accuracy_score(y_true=v["ref"], y_pred=v["hyp"]) * 100, 3) for k, v in per_emo.items()}
-            test_set_info = test_set.split('_') if '_' in test_set else [test_set, "_"]
-            results.append({'dataset': test_set_info[0], 'split': test_set_info[1], 'fold': fold,
+            base_name = test_set.replace(anon_data_suffix, '') if anon_data_suffix else test_set
+            parts = base_name.split('_') if '_' in base_name else [base_name, "_"]
+            dataset_name = parts[0]
+            split_name = parts[-1] if len(parts) >= 3 and parts[-1] in ('dev', 'test') else (parts[1] if len(parts) > 1 else "_")
+            results.append({'dataset': dataset_name, 'split': split_name, 'fold': fold,
                            'ser': 'anon' if anon_data_suffix in test_set else 'original', 'UAR': uar, **score_per_emo})
             print(f'{test_set} fold: {fold} - UAR: {uar}')
     return results
@@ -121,8 +124,11 @@ def _eval_ser_emotion2vec(eval_datasets, eval_data_dir, models_path, anon_data_s
             continue
         uar = round(recall_score(y_true=ref, y_pred=hyp, average="macro") * 100, 3)
         score_per_emo = {f"ACC_{k}": round(accuracy_score(y_true=v["ref"], y_pred=v["hyp"]) * 100, 3) for k, v in per_emo.items()}
-        test_set_info = test_set.split('_') if '_' in test_set else [test_set, "_"]
-        results.append({'dataset': test_set_info[0], 'split': test_set_info[1], 'fold': 1,
+        base_name = test_set.replace(anon_data_suffix, '') if anon_data_suffix else test_set
+        parts = base_name.split('_') if '_' in base_name else [base_name, "_"]
+        dataset_name = parts[0]
+        split_name = parts[-1] if len(parts) >= 3 and parts[-1] in ('dev', 'test') else (parts[1] if len(parts) > 1 else "_")
+        results.append({'dataset': dataset_name, 'split': split_name, 'fold': 1,
                        'ser': 'anon' if anon_data_suffix in test_set else 'original', 'UAR': uar, **score_per_emo})
         print(f'{test_set} (emotion2vec+ SER) - UAR: {uar}')
     return results

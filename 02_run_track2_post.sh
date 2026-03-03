@@ -14,7 +14,7 @@ if [ -n "$1" ]; then
   anon_config=$1
 else
   #anon_config=configs/$track/anon_post_sttts.yaml
-  anon_config=configs/$track/anon_post_ssl.yaml
+  anon_config=configs/$track/anon_post_BM1.yaml
 fi
 echo "Using config: $anon_config"
 
@@ -35,32 +35,5 @@ else
 fi
 echo $anon_suffix
 # Generate anonymized audio (multilang training set)
-echo "Running anonymization..."
 python run_anonymization.py --config ${anon_config} ${force_compute}
 
-# perfom ASV post training evaluation
-python run_evaluation.py --config $(dirname ${anon_config})/eval_post_cn.yaml --overwrite "${eval_overwrite}" ${force_compute}
-python run_evaluation.py --config $(dirname ${anon_config})/eval_post_ja.yaml --overwrite "${eval_overwrite}" ${force_compute}
-#python run_evaluation.py --config $(dirname ${anon_config})/eval_post_en.yaml --overwrite "${eval_overwrite}" ${force_compute}
-#python run_evaluation.py --config $(dirname ${anon_config})/eval_post_de.yaml --overwrite "${eval_overwrite}" ${force_compute}
-#python run_evaluation.py --config $(dirname ${anon_config})/eval_post_es.yaml --overwrite "${eval_overwrite}" ${force_compute}
-#python run_evaluation.py --config $(dirname ${anon_config})/eval_post_fr.yaml --overwrite "${eval_overwrite}" ${force_compute}
-
-
-# Record post results only (ignore eval_pre)
-results_exp=exp/results_summary/$track
-mkdir -p ${results_exp}
-: > "${results_exp}/result_for_rank${anon_suffix}"
-for f in exp/results_summary/${track}/eval_anon_*${anon_suffix}/results_anon.txt; do
-  [ -f "$f" ] && { cat "$f"; echo; } >> "${results_exp}/result_for_rank${anon_suffix}"
-done
-
-# Zip: track2-only; include exp/asv_ssl but exclude track1 (libri_*)
-zip ${results_exp}/result_for_submission${anon_suffix}.zip -r \
-  -x "*libri*" \
-  "${results_exp}/result_for_rank${anon_suffix}" \
-  exp/openai exp/ser_emotion2vec \
-  exp/asv_ssl \
-  exp/asv_anon_track2*${anon_suffix} \
-  exp/results_summary/${track} exp/results_summary/eval_orig${anon_suffix} \
-  > /dev/null 2>&1 || true

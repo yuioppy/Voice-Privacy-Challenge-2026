@@ -66,8 +66,17 @@ def save_result_summary(out_path, results_dict, config):
         if 'asv' in results_dict:
             f.write('\n')
             asv_results = results_dict['asv']
+            anon_suffix = config.get('anon_data_suffix', '')
+            # track2 submission: orig file with anon_suffix -> keep mixed+anon+anon for ASV
+            if 'orig' in os.path.basename(out_path) and anon_suffix:
+                f.write('---- ASV_eval results ----\n')
+                asv_results_filter = asv_results[
+                    (asv_results['gender'] == 'mixed')
+                    & (asv_results['enrollment'] == 'anon')
+                    & (asv_results['trial'] == 'anon')
+                ]
             # if EERs computed by ASV_eval, only keep the results of OO condition
-            if 'orig' in os.path.basename(out_path):
+            elif 'orig' in os.path.basename(out_path):
                 f.write('---- ASV_eval results ----\n')
                 asv_results_filter = asv_results[((asv_results['enrollment'] == 'original') & (asv_results['trial'] == 'original'))]
 

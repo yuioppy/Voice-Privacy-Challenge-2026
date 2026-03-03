@@ -9,15 +9,13 @@ source env.sh
 declare -A lang_urls=(
     ["en"]="https://duke.app.box.com/shared/static/19ckgfo06hwkorermjejsb05in65js3n"
     ["de"]="https://duke.app.box.com/shared/static/zt36nglx7axehrty2uzi3vn007q9rqkk"
-    ["ja"]="https://duke.app.box.com/shared/static/rnj5jz5qrg7wrupo2c3wnk8gqu1ndwxv"
-    ["cn"]="https://duke.app.box.com/shared/static/h912rd8jzzh13ywqvsi9yk78zwf1zi3x"
     ["fr"]="https://duke.app.box.com/shared/static/l125t9a9pr2c26r3or6eord3h2z17e8u"
     ["es"]="https://duke.app.box.com/shared/static/vq1o1r42xjwvhnvllfz1vioyis6x6394"
 )
 
 # Check if all language directories exist
 all_exist=true
-for lang in de ja cn fr es en; do
+for lang in de fr es en; do
     if [ ! -d "corpora/$lang" ]; then
         all_exist=false
         break
@@ -98,29 +96,18 @@ if [ ! -d "exp/$model" ]; then
     cd ../
 fi
 
-check_data=data/cn_dev_enrolls
+check_data=data/en_dev_enrolls
 if [ ! -d $check_data ]; then
     if  [ ! -f .mls_langs.zip ]; then
         echo "Download MLS kaldi format datadir..."
-        wget -O mls_langs.zip https://duke.app.box.com/shared/static/vby1xgcdeg4vecdhjsinwcglblqlsd4v
+        wget -O mls_langs.zip https://duke.app.box.com/shared/static/0pper7vsridra2zlo7cvsfiidbtfiy2z
         mv mls_langs.zip .mls_langs.zip
     fi
     echo "Unpacking .mls_langs.zip"
     unzip .mls_langs.zip
 fi
 
-check_data=data/emodata_track2
-if [ ! -d $check_data ]; then
-    cd data/
-    if  [ ! -f .emodata_track2.zip ]; then
-        echo "Download emodata_track2..."
-        wget -O emodata_track2.zip https://duke.app.box.com/shared/static/17zjskzslxl11vjlujm041zr412j0zvk
-        mv emodata_track2.zip .emodata_track2.zip
-    fi
-    echo "Unpacking .emodata_track2.zip"
-    unzip .emodata_track2.zip
-    cd ..
-fi
+
 
 # Train data URLs (chinese, japanese; add english/german/spanish/french as needed)
 declare -A train_urls=(
@@ -132,11 +119,11 @@ declare -A train_urls=(
     ["french"]="https://duke.app.box.com/shared/static/xr34gltyhpiue440fi1o0jlllgt7odgp"
 )
 
-check_data=data/train_chinese
+check_data=data/train_english
 if [ ! -d "$check_data" ]; then
     mkdir -p data
     cd data
-    for lang in chinese japanese english german spanish french; do
+    for lang in english german spanish french; do
         [ -z "${train_urls[$lang]:-}" ] && continue
         if [ ! -f ".${lang}.zip" ]; then
             echo "Download ${lang}..."

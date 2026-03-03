@@ -3,10 +3,18 @@ from argparse import ArgumentParser
 import os
 parser = ArgumentParser()
 
+def _str_to_bool(v):
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, str):
+        return v.lower() in ('true', 'yes', '1')
+    return bool(v)
+
 parser.add_argument('--config', default='anon_config.yaml')
 parser.add_argument('--gpu_ids', default='0')
-parser.add_argument('--force_compute', default=False, type=bool)
+parser.add_argument('--force_compute', default='false', type=str)
 args = parser.parse_args()
+args.force_compute = _str_to_bool(args.force_compute)
 
 if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set devices
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -35,9 +43,32 @@ def shell_run(cmd):
         logger.error(f'Failed to bash execute: {cmd}')
         sys.exit(1)
 
+
+def check_dependencies_in_venv(requirements_file, venv_dir):
+    """Run check_dependencies using the given venv's Python (for pipelines with isolated venv)."""
+    venv_python = Path(venv_dir) / 'bin' / 'python'
+    if not venv_python.exists():
+        venv_python = Path(venv_dir) / 'Scripts' / 'python.exe'
+    if not venv_python.exists():
+        raise FileNotFoundError(f'Python not found in venv: {venv_dir}')
+    code = f"import sys; sys.path.insert(0, '.'); from utils import check_dependencies; check_dependencies('{requirements_file}')"
+    result = subprocess.run([str(venv_python), '-c', code], cwd=Path(__file__).parent)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
 if __name__ == '__main__':
 
     config = parse_yaml(Path(args.config))
+
+    # For isolated-venv pipelines: run install first (creates venv), then re-exec with that venv
+    if config['pipeline'] in ('sttts', 'sttts_multi'):
+        install_script = 'anonymization/pipelines/sttts/install.sh' if config['pipeline'] == 'sttts' else 'anonymization/pipelines/sttts_multi/install.sh'
+        shell_run(install_script)
+        venv_name = 'venv_sttts' if config['pipeline'] == 'sttts' else 'venv_sttts_multi'
+        venv_python = Path(__file__).parent / venv_name / 'bin' / 'python'
+        if venv_python.exists() and Path(sys.executable).resolve() != venv_python.resolve():
+            os.execv(str(venv_python), [str(venv_python)] + sys.argv)
+
     datasets = get_datasets(config)
 
     gpus = args.gpu_ids.split(',')
@@ -53,15 +84,23 @@ if __name__ == '__main__':
         from anonymization.pipelines.mcadams import McAdamsPipeline as pipeline
     elif config['pipeline'] == "sttts":
         shell_run('anonymization/pipelines/sttts/install.sh')
-        check_dependencies('anonymization/pipelines/sttts/requirements.txt')
+        check_dependencies_in_venv('anonymization/pipelines/sttts/requirements.txt',
+                                   Path(__file__).parent / 'venv_sttts')
         if "download_precomputed_intermediate_repr" in config and config["download_precomputed_intermediate_repr"]:
             shell_run('anonymization/pipelines/sttts/download_precomputed_intermediate_repr.sh')
+        venv_dir = Path(__file__).parent / 'venv_sttts'
+        os.environ['ESPEAK_DATA_PATH'] = str(venv_dir / 'share' / 'espeak-ng-data')
+        os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = str(venv_dir / 'lib' / 'libespeak-ng.so')
         from anonymization.pipelines.sttts import STTTSPipeline as pipeline
     elif config['pipeline'] == "sttts_multi":
         shell_run('anonymization/pipelines/sttts_multi/install.sh')
-        check_dependencies('anonymization/pipelines/sttts_multi/requirements.txt')
+        check_dependencies_in_venv('anonymization/pipelines/sttts_multi/requirements.txt',
+                                   Path(__file__).parent / 'venv_sttts_multi')
         if "download_precomputed_intermediate_repr" in config and config["download_precomputed_intermediate_repr"]:
             shell_run('anonymization/pipelines/sttts_multi/download_precomputed_intermediate_repr.sh')
+        venv_dir = Path(__file__).parent / 'venv_sttts_multi'
+        os.environ['ESPEAK_DATA_PATH'] = str(venv_dir / 'share' / 'espeak-ng-data')
+        os.environ['PHONEMIZER_ESPEAK_LIBRARY'] = str(venv_dir / 'lib' / 'libespeak-ng.so')
         from anonymization.pipelines.sttts_multi import STTTSMultiPipeline as pipeline
     elif config['pipeline'] == "nac":
         shell_run('anonymization/pipelines/nac/install.sh')

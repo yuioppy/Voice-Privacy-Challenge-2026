@@ -15,6 +15,9 @@ try:
 except ModuleNotFoundError as exc:
     raise SystemExit("Install soundfile (pip install soundfile) to run this script.") from exc
 
+# Utterances to exclude from all outputs (e.g., corrupted or problematic audio)
+EXCLUDED_UTTERANCES: set[str] = {"jvs009_TRAVEL1000_0787"}
+
 
 def _write_file(path: Path, lines: list[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -73,14 +76,12 @@ def _map_audio_files(source_dir: Path, subset_name: str) -> dict[str, tuple[str,
         subset_name: Subset name (e.g., "parallel100" or "nonpara30")
     """
     lookup: dict[str, tuple[str, Path]] = {}
-    # Find all wav16kHz16bit directories under jvs*/{subset_name}/
     pattern = f"jvs*/{subset_name}/wav16kHz16bit"
     for wav_dir in source_dir.glob(pattern):
-        speaker_id = wav_dir.parent.parent.name  # e.g., jvs001
+        speaker_id = wav_dir.parent.parent.name
         for wav_path in wav_dir.glob("*.wav"):
             if wav_path.is_file():
-                utt_id_raw = wav_path.stem  # e.g., VOICEACTRESS100_001
-                # Create unique utterance ID: speaker_id_utt_id
+                utt_id_raw = wav_path.stem
                 utt_id = f"{speaker_id}_{utt_id_raw}"
                 lookup[utt_id] = (speaker_id, wav_path)
     return lookup
@@ -125,6 +126,8 @@ def _build_kaldi_maps(
 
     missing_audio = []
     for utt in sorted(transcripts):
+        if utt in EXCLUDED_UTTERANCES:
+            continue
         entry = audio_index.get(utt)
         if entry is None:
             missing_audio.append(utt)

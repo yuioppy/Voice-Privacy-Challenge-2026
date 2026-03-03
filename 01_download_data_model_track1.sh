@@ -8,33 +8,11 @@ source env.sh
 # iemocap_corpus=PATH_TO_IEMOCAP
 
 for data_set in libri_dev libri_test; do
-    dir=data/$data_set
-    if [ ! -f $dir/wav.scp ] ; then
-        if [ -z $password ]; then
-          echo "Enter password provided by the organisers (check README.md registration):"
-          read -s password
-          echo
-        fi
-        [ -d $dir ] && rm -r $dir
-        if [ ! -f corpora/$data_set.tar.gz ]; then
-            mkdir -p corpora
-            cd corpora
-            sshpass -p "$password"  sftp -oStrictHostKeyChecking=no getdata@voiceprivacychallenge.univ-avignon.fr <<EOF
-    cd /challengedata/corpora
-    get $data_set.tar.gz
-    bye
-EOF
-  cd -
-  fi
-  echo "  Unpacking $data_set data set..."
-  tar -xf corpora/$data_set.tar.gz || exit 1
-  [ ! -f $dir/text ] && echo "File $dir/text does not exist" && exit 1
-  cut -d' ' -f1 $dir/text > $dir/text1
-  cut -d' ' -f2- $dir/text | sed -r 's/,|!|\?|\./ /g' | sed -r 's/ +/ /g' | awk '{print toupper($0)}' > $dir/text2
-  paste -d' ' $dir/text1 $dir/text2 > $dir/text
-  rm $dir/text1 $dir/text2
-fi
-
+    if [ ! -d "data/$data_set" ]; then
+        echo "Downloading $data_set..."
+        wget -O $data_set.zip https://duke.app.box.com/shared/static/37dg9nzq5gwe254d6dhxgngk2g8dcuzz
+        unzip $data_set.zip
+    fi
 done
 
 
@@ -67,16 +45,6 @@ if [ ! -d $check ]; then
     cd ../
 fi
 
-check_data=data/libri_dev_enrolls
-if [ ! -d $check_data ]; then
-    if  [ ! -f .data.zip ]; then
-        echo "Download VPC kaldi format datadir..."
-        wget https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/releases/download/data.zip/data.zip
-        mv data.zip .data.zip
-    fi
-    echo "Unpacking data"
-    unzip .data.zip
-fi
 
 model=asr
 if [ ! -d "exp/$model" ]; then

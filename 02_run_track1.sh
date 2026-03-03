@@ -39,7 +39,6 @@ else
 fi
 
 # Generate anonymized audio (libri dev+test set & IEMOCAP dev+test set & libri-360h)
-echo "Running anonymization..."
 python run_anonymization.py --config ${anon_config} ${force_compute}
 
 # Perform libri dev+test & IEMOCAP dev+test pre evaluation using pretrained ASR/ASV/SER models
@@ -56,9 +55,3 @@ results_summary_path_anon=$(python3 -c "from hyperpyyaml import load_hyperpyyaml
 results_exp=exp/results_summary/$track
 mkdir -p ${results_exp}
 { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
-# ASR=exp/asr, SER=exp/ser, ASV_pre=exp/asv_ssl, ASV_post=exp/asv_anon_<suffix>
-zip ${results_exp}/result_for_submission${anon_suffix}.zip -r \
-  "${results_exp}/result_for_rank${anon_suffix}" \
-  exp/asr exp/ser exp/asv_ssl exp/asv_anon${anon_suffix} \
-  exp/results_summary/*${anon_suffix}* \
-  > /dev/null 2>&1 || true

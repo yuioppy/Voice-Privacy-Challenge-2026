@@ -47,7 +47,8 @@ def _load_transcripts(path: Path) -> dict[str, str]:
             if not stripped:
                 continue
             key, text = stripped.split("\t", 1)
-            transcripts[key] = text.strip()
+            utt_id = key[:-4] if key.endswith(".wav") else key  # Normalize to stem
+            transcripts[utt_id] = text.strip()
     return transcripts
 
 
@@ -57,7 +58,8 @@ def _map_audio_files(wav_root: Path) -> dict[str, tuple[str, Path]]:
         if not wav_path.is_file():
             continue
         speaker = wav_path.parent.name
-        lookup[wav_path.name] = (speaker, wav_path)
+        utt_id = wav_path.stem  # Use stem (no .wav) for consistent utt_id format
+        lookup[utt_id] = (speaker, wav_path)
     return lookup
 
 
@@ -275,6 +277,7 @@ def _process_single_set(
     out_trials_f_dir: Path | None,
     out_trials_m_dir: Path | None,
     out_trials_mixed_dir: Path | None,
+    output_base: Path | None,
     skip_subsets: bool,
 ) -> None:
     """Process a single set (dev or test) and generate enroll/trials."""
@@ -485,7 +488,7 @@ def _process_single_set(
     utt2dur_map = {line.split()[0]: float(line.split()[1]) for line in utt2dur_lines}
     wav_map = {line.split()[0]: line.split()[1] for line in wav_lines}
     utt2spk_map = {line.split()[0]: line.split()[1] for line in utt2spk_lines}
-    default_out_base = data_dir.parent
+    default_out_base = output_base if output_base is not None else data_dir.parent
     enroll_dir = out_enroll_dir or (default_out_base / f"{output_prefix}_enrolls")
     trials_f_dir = out_trials_f_dir or (default_out_base / f"{output_prefix}_trials_f")
     trials_m_dir = out_trials_m_dir or (default_out_base / f"{output_prefix}_trials_m")
@@ -571,6 +574,12 @@ def main() -> None:
         type=Path,
         default=Path("../corpora/cn"),
         help="Root output directory for the Kaldi maps (text, wav.scp, ...).",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=(Path(__file__).resolve().parent.parent / "data"),
+        help="Base directory for enrollment/trial subsets (enrolls, trials_f, trials_m, trials_mixed). Default: project_root/data.",
     )
     parser.add_argument(
         "--output-prefix",
@@ -934,6 +943,7 @@ def main() -> None:
             args.out_trials_f_dir,
             args.out_trials_m_dir,
             args.out_trials_mixed_dir,
+            args.output_dir,
             args.skip_subsets,
         )
         
@@ -960,6 +970,7 @@ def main() -> None:
             args.out_trials_f_dir,
             args.out_trials_m_dir,
             args.out_trials_mixed_dir,
+            args.output_dir,
             args.skip_subsets,
         )
         return
@@ -1062,6 +1073,7 @@ def main() -> None:
         args.out_trials_f_dir,
         args.out_trials_m_dir,
         args.out_trials_mixed_dir,
+        args.output_dir,
         args.skip_subsets,
     )
 
