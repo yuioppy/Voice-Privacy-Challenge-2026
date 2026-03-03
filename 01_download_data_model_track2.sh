@@ -130,7 +130,7 @@ if [ ! -d "$check_data" ]; then
             wget -O "${lang}.zip" "${train_urls[$lang]}"
             mv "${lang}.zip" ".${lang}.zip"
         fi
-        echo "Unpacking .${lang}.zip"ex
+        echo "Unpacking .${lang}.zip"
         unzip -q ".${lang}.zip"
     done
     cd ..
