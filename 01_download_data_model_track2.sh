@@ -25,11 +25,11 @@ done
 
 # Download MLS for each language
 if [ "$all_exist" = false ]; then
-    echo "Download MLS for languages: de, ja, cn, fr, es, en..."
+    echo "Download MLS for languages: de, fr, es, en..."
     mkdir -p corpora
     cd corpora
     
-    for lang in de ja cn fr es en; do
+    for lang in de fr es en; do
         lang_dir="$lang"
         lang_file="${lang}.zip"
         lang_url="${lang_urls[$lang]}"
