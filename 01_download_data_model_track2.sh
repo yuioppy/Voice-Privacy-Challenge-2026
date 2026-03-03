@@ -9,13 +9,15 @@ source env.sh
 declare -A lang_urls=(
     ["en"]="https://duke.app.box.com/shared/static/19ckgfo06hwkorermjejsb05in65js3n"
     ["de"]="https://duke.app.box.com/shared/static/zt36nglx7axehrty2uzi3vn007q9rqkk"
+    ["ja"]="https://duke.app.box.com/shared/static/rnj5jz5qrg7wrupo2c3wnk8gqu1ndwxv"
+    ["cn"]="https://duke.app.box.com/shared/static/h912rd8jzzh13ywqvsi9yk78zwf1zi3x"
     ["fr"]="https://duke.app.box.com/shared/static/l125t9a9pr2c26r3or6eord3h2z17e8u"
     ["es"]="https://duke.app.box.com/shared/static/vq1o1r42xjwvhnvllfz1vioyis6x6394"
 )
 
 # Check if all language directories exist
 all_exist=true
-for lang in de fr es en; do
+for lang in de ja cn fr es en; do
     if [ ! -d "corpora/$lang" ]; then
         all_exist=false
         break
@@ -25,11 +27,11 @@ done
 
 # Download MLS for each language
 if [ "$all_exist" = false ]; then
-    echo "Download MLS for languages: de, fr, es, en..."
+    echo "Download MLS for languages: de, ja, cn, fr, es, en..."
     mkdir -p corpora
     cd corpora
     
-    for lang in de fr es en; do
+    for lang in de ja cn fr es en; do
         lang_dir="$lang"
         lang_file="${lang}.zip"
         lang_url="${lang_urls[$lang]}"
@@ -111,8 +113,6 @@ fi
 
 # Train data URLs (chinese, japanese; add english/german/spanish/french as needed)
 declare -A train_urls=(
-    ["chinese"]="https://duke.app.box.com/shared/static/ag7dmjzfen7utwhc2iwvrded1hfyo5ye"
-    ["japanese"]="https://duke.app.box.com/shared/static/781x91n13on4oki9cfmb4mgfulq2faa3"
     ["english"]="https://duke.app.box.com/shared/static/l4tkryb5w140da11n56ijd2tccdr8ajn"
     ["german"]="https://duke.app.box.com/shared/static/5r3s0bzczdiiosycqy368k6sa0jsguu3"
     ["spanish"]="https://duke.app.box.com/shared/static/e99rs57lw74tracwfzxikfe8z4lnafj5"
