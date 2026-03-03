@@ -5,11 +5,11 @@ corpora
 data
 *.zip
 .micromamba
-.install-hash-.
+.install-hash-*
 .install-hash-ssl
 .pip_constraints.txt
 exp
-*/__pycache__
+log*
 *.pyc
 *_local.sh
 

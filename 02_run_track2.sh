@@ -18,8 +18,11 @@ else
 fi
 echo "Using config: $anon_config"
 
+# to force recompute
+force_compute='--force_compute True'
+# to not recompute
 force_compute=
-force_compute='--force_compute False'
+
 
 # JSON to modify run_evaluation(s) configs, see below
 eval_overwrite="{"

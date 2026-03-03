@@ -124,8 +124,8 @@ fi
 
 # Train data URLs (chinese, japanese; add english/german/spanish/french as needed)
 declare -A train_urls=(
-    ["chinese"]="https://duke.app.box.com/shared/static/781x91n13on4oki9cfmb4mgfulq2faa3"
-    ["japanese"]="https://duke.app.box.com/shared/static/ag7dmjzfen7utwhc2iwvrded1hfyo5ye"
+    ["chinese"]="https://duke.app.box.com/shared/static/ag7dmjzfen7utwhc2iwvrded1hfyo5ye"
+    ["japanese"]="https://duke.app.box.com/shared/static/781x91n13on4oki9cfmb4mgfulq2faa3"
     ["english"]="https://duke.app.box.com/shared/static/l4tkryb5w140da11n56ijd2tccdr8ajn"
     ["german"]="https://duke.app.box.com/shared/static/5r3s0bzczdiiosycqy368k6sa0jsguu3"
     ["spanish"]="https://duke.app.box.com/shared/static/e99rs57lw74tracwfzxikfe8z4lnafj5"

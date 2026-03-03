@@ -51,7 +51,7 @@ compute_and_write_hash() {
 EOF
 source ./env.sh
 
-compute_and_write_hash "requirements.txt"  # SHA256: 18198de8f6d028adda206658653ea0139d369b2e6ff24fcab2fe0dbf3ceadecb
+compute_and_write_hash "requirements.txt"  # SHA256: 4dc6ee015d95dac5e2ae9c7fca5de47a402bdef46dc226516e2b75764b4f4443
 trigger_new_install ".micromamba/micromamba .done-*"
 
 mark=.done-venv
