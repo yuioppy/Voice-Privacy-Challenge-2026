@@ -251,39 +251,19 @@ VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ VPC_TEAM
 ## General information
 
 #### Evaluation plan
-For more details about the baseline and data, please see [The VoicePrivacy 2024 Challenge Evaluation Plan](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Eval_Plan_v2.0.pdf) - Updated on 1st April 2024
+For more details about the baseline and data, please see The VoicePrivacy 2024 Challenge Evaluation Plan
 
 #### Training data
-[Final list of models and data](https://www.voiceprivacychallenge.org/docs/VoicePrivacy_2024_Challenge_Final_list_of_models_and_data_for_training_anonymization_systems_-_26.03.2024.pdf) for training anonymization systems.
 
 #### Registration
-Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
-
-## Some potential questions you may have and how to solve them:
-> 1. $ASV_{eval}^{anon}$ training is slow
-
-Training of the $ASV_{eval}^{anon}$ model may vary from about 2 up to 10 hours depending on the available hardware.
-If you have an SSD or a high-performance drive, $ASV_{eval}^{anon}$ takes ~2h, but if the drive is old and slow, in a worse case,  $ASV_{eval}^{anon}$ training takes ~10h. Increasing $num_workers in config/eval_post.yaml may help to speed up the processing.
-
-> 2. OOM problem when decoding by $ASR_{eval}$
-
-Reduce the $eval_bachsize in config/eval_pre.yaml
-
-> 3. The $ASR_{eval}$ is a [pretrained wav2vec+ctc trained on LibriSpeech-960h](https://huggingface.co/speechbrain/asr-wav2vec2-librispeech)
-
-> 4. Error on `utils.prepare_results_in_kaldi_format`
-
-means something bad happened when running the anonymization pipeline.  
-Remove all `data/*$anon_data_suffix` directories and re-run anonymization and evaluation steps (if `$anon_data_suffix=suff`, also remove the directories that share a matching suffix: `$anon_data_suffix=something_suff`). Check that your anonymization pipeline produces a wav file for each dataset entry, every original wav should have its anonymized counterpart.  
-
+Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **Registration**.
 
 
 ## Organizers (in alphabetical order)
-
-- Pierre Champion - Inria, France
+- Ridwan Arefeen - Singapore Institute of Technology, Singapore
 - Nicholas Evans - EURECOM, France
 - Sarina Meyer - University of Stuttgart, Germany
-- Xiaoxiao Miao - Singapore Institute of Technology, Singapore
+- Xiaoxiao Miao - Duke Kunshan University, China
 - Michele Panariello - EURECOM, France
 - Massimiliano Todisco - EURECOM, France
 - Natalia Tomashenko - Inria, France
@@ -295,7 +275,7 @@ Contact: organisers@lists.voiceprivacychallenge.org
 
 ## License
 
-Copyright (C) 2024
+Copyright (C) 2026
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -313,16 +293,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 ## Reference
 
 ```
-@article{tomashenko2024voiceprivacy,
-      title={The {VoicePrivacy} 2024 Challenge Evaluation Plan}, 
-      author={Natalia Tomashenko and Xiaoxiao Miao and Pierre Champion and Sarina Meyer and Xin Wang and Emmanuel Vincent and Michele Panariello and Nicholas Evans and Junichi Yamagishi and Massimiliano Todisco},
-      year={2024},
-      eprint={2404.02677},
-      archivePrefix={arXiv},
-      primaryClass={eess.AS}
-}
+
 ```
 
-## Acknowledgments
-
-Some parts of the code and structure are based on [VoicePAT](https://github.com/DigitalPhonetics/VoicePAT) (Paper: https://ieeexplore.ieee.org/document/10365329)
