@@ -41,7 +41,7 @@ echo $anon_suffix
 # Generate anonymized audio (multilang dev+test set & emotion_track2)
 python run_anonymization.py --config ${anon_config} ${force_compute}
 
-# Perform multilang dev+test & emotion_track2 pre evaluation using pretrained ASR/ASV/SER models
+# Perform multilang dev+test & emotion_track2 pre evaluation using pretrained ASR/ASV/SER models ASR 1.5hours
 python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
 # Merge results
