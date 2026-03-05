@@ -39,7 +39,7 @@ else
 fi
 
 # Generate anonymized audio (libri dev+test set & IEMOCAP dev+test set & libri-360h)
-#python run_anonymization.py --config ${anon_config} ${force_compute}
+python run_anonymization.py --config ${anon_config} ${force_compute}
 
 # Perform libri dev+test & IEMOCAP dev+test pre evaluation using pretrained ASR/ASV/SER models
 python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
