@@ -68,3 +68,13 @@ print(load_hyperpyyaml(f, overwrite).get('results_summary_path', ''))
 results_exp=exp/results_summary/$track
 mkdir -p ${results_exp}
 { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
+
+# Zip for submission: result_for_rank + CSVs + asv_anon files only (no model dirs)
+zip -q ${results_exp}/result_for_submission${anon_suffix}.zip \
+  "${results_exp}/result_for_rank${anon_suffix}" \
+  exp/asr/results*${anon_suffix}.csv \
+  exp/ser/results*${anon_suffix}.csv \
+  exp/ser/results_folds*${anon_suffix}.csv \
+  exp/asv_ssl/results*${anon_suffix}.csv 2>/dev/null || true
+[ -d "exp/asv_anon${anon_suffix}" ] && find exp/asv_anon${anon_suffix} -maxdepth 1 -type f -exec zip -q -j ${results_exp}/result_for_submission${anon_suffix}.zip {} \; 2>/dev/null || true
+
