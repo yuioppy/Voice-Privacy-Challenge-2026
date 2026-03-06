@@ -15,7 +15,7 @@ if [ -n "$1" ]; then
   anon_config=$1
 else
   # anon_config=configs/${track}/anon_mcadams.yaml # B2 anonymization costs 2 hours
-  # anon_config=configs/${track}/anon_sttts.yaml # B3 anonymization using precomputed features, costs  hours
+  # anon_config=configs/${track}/anon_sttts.yaml # B3 anonymization using precomputed features, costs 13 hours
   # anon_config=configs/${track}/anon_nac.yaml # B4
   anon_config=configs/${track}/anon_asrbn.yaml # B5 anonymization costs 1 hour
 
