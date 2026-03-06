@@ -70,8 +70,9 @@ mkdir -p ${results_exp}
 { cat "${results_summary_path_orig}"; echo; cat "${results_summary_path_anon}"; } > "${results_exp}/result_for_rank${anon_suffix}"
 
 # Zip for submission: result_for_rank + CSVs + asv_anon files only (no model dirs)
-zip -q ${results_exp}/result_for_submission${anon_suffix}.zip \
+zip -r ${results_exp}/result_for_submission${anon_suffix}.zip \
   "${results_exp}/result_for_rank${anon_suffix}" \
+  exp/asr/*${anon_suffix} \
   exp/asr/results*${anon_suffix}.csv \
   exp/ser/results*${anon_suffix}.csv \
   exp/ser/results_folds*${anon_suffix}.csv \
