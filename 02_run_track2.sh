@@ -20,7 +20,7 @@ fi
 echo "Using config: $anon_config"
 
 # to force recompute
-force_compute='--force_compute True'
+force_compute='--force_compute False'
 # to not recompute
 force_compute=
 
