@@ -77,5 +77,5 @@ zip -r ${results_exp}/result_for_submission${anon_suffix}.zip \
   exp/ser/results*${anon_suffix}.csv \
   exp/ser/results_folds*${anon_suffix}.csv \
   exp/asv_ssl/results*${anon_suffix}.csv 2>/dev/null || true
-[ -d "exp/asv_anon${anon_suffix}" ] && find exp/asv_anon${anon_suffix} -maxdepth 1 -type f -exec zip -q -j ${results_exp}/result_for_submission${anon_suffix}.zip {} \; 2>/dev/null || true
+[ -d "exp/asv_anon${anon_suffix}" ] && find exp/asv_anon${anon_suffix} -maxdepth 1 -type f -exec zip -q ${results_exp}/result_for_submission${anon_suffix}.zip {} \; 2>/dev/null || true
 
