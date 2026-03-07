@@ -46,7 +46,7 @@ There are two options:
 
 #### Step 1: Anonymization
 ```sh
-python run_anonymization.py --config configs/track1/anon_mcadams.yaml  #Computational time varies from 30 minutes to 10 hours, depending on the number of core;, for other methods it may be longer and depends on the available hardware. 
+python run_anonymization.py --config configs/track1/anon_mcadams.yaml  #Computational time varies from 30 minutes to 10 hours, depending on the number of core; for other methods it may be longer and depends on the available hardware. 
 
 ```
 The anonymized audios will be saved in `$data_dir=data` into 7 folders corresponding to datasets.
