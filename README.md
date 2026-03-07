@@ -17,7 +17,7 @@ Please visit the [challenge website](https://www.voiceprivacychallenge.org/) for
 1. Download data and models:
 ```bash 01_download_data_model_track1.sh```
 
-2. Run Track 1 (semi-informed EER, ASR, UAR): ```02_run_track1.sh```
+2. Run Track 1 (semi-informed EER, WER, UAR): ```02_run_track1.sh```
 
 > [!IMPORTANT]  
 > The [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus must be downloaded on your own by submitting a request at https://sail.usc.edu/iemocap/iemocap_release.htm. The waiting time may take up to 7-9 days.
@@ -28,25 +28,25 @@ There are two options:
 1. Run anonymization and evaluation: `./02_run_track1.sh configs/track1/anon_mcadams.yaml`.  
     For each anonymization baseline, there is a corresponding config file:
     -  #### [Anonymization using the McAdams coefficient](https://arxiv.org/abs/2011.01130): **B2**
-         [`configs/track1/anon_mcadams.yaml`](configs/track1/anon_mcadams.yaml)  A fast CPU-only signal processing-based system  (default).
+         [`configs/track1/anon_mcadams.yaml`](configs/track1/anon_mcadams.yaml)  A fast CPU-only signal-processing-based system  (default).
 
     -  #### [Anonymization using phonetic transcriptions and GAN (STTTS)](https://ieeexplore.ieee.org/document/10096607): **B3**
-         [`configs/track1/anon_sttts.yaml`](configs/track1/anon_sttts.yaml)  A system based on unmodified phone sequence, modified prosody, modified speaker embedding representations and speech synthesis.
+         [`configs/track1/anon_sttts.yaml`](configs/track1/anon_sttts.yaml)  A system based on an unmodified phone sequence, modified prosody, modified speaker embedding representations and speech synthesis.
 
-    -  #### [Anonymization using **n**eural audio codec (NAC) language modeling](https://arxiv.org/abs/2309.14129): **B4**
+    -  #### [Anonymization using neural audio codec (NAC) language modeling](https://arxiv.org/abs/2309.14129): **B4**
 
         [`configs/track1/anon_nac.yaml`](configs/track1/anon_nac.yaml) 
 
     -  #### [Anonymization using ASR-BN with vector quantization (VQ)](https://arxiv.org/abs/2308.04455): **B5** 
 
-        [`configs/track1/anon_asrbn.yaml`](configs/track1/anon_asrbn.yaml) A fast system based on vector quantized acoustic bottleneck, pitch, and one-hot speaker representations and  a HiFi-GAN speech synthesis model.
+        [`configs/track1/anon_asrbn.yaml`](configs/track1/anon_asrbn.yaml) A fast system based on vector-quantized acoustic bottleneck, pitch, and one-hot speaker representations, and a HiFi-GAN speech synthesis model.
     
       
 2. Run anonymization and evaluation separately in two steps:
 
 #### Step 1: Anonymization
 ```sh
-python run_anonymization.py --config configs/track1/anon_mcadams.yaml  #Computational time varies from 30 minutes to 10 hours, depending on the number of cores, for other methods it may be longer and depending on the available hardware. 
+python run_anonymization.py --config configs/track1/anon_mcadams.yaml  #Computational time varies from 30 minutes to 10 hours, depending on the number of core;, for other methods it may be longer and depends on the available hardware. 
 
 ```
 The anonymized audios will be saved in `$data_dir=data` into 7 folders corresponding to datasets.
@@ -133,8 +133,11 @@ There are two options:
     -  #### [Anonymization using self-supervised learning](https://arxiv.org/abs/2203.14834): **BM1**
          [`configs/track2/anon_BM1.yaml`](configs/track2/anon_BM1.yaml)  A system based on content, prosody, modified speaker embedding representations and speech synthesis  (default).
 
-    -  #### [Anonymization using phonetic transcriptions and GAN)](https://arxiv.org/abs/2407.02937): **BM2 and BM3**
-         [`configs/track2/anon_BM2.yaml`](configs/track1/anon_sttts.yaml)  A system based on unmodified phone sequence, modified prosody, modified speaker embedding representations and speech synthesis.
+    -  #### [Anonymization using phonetic transcriptions and GAN](https://arxiv.org/abs/2407.02937): **BM2 and BM3**
+         [`configs/track2/anon_BM2.yaml`](configs/track2/anon_BM2.yaml)  A system based on an unmodified phone sequence, modified prosody,             GAN-generated artificial speaker embeddings, and speech synthesis with IMS Toucan + HiFi-GAN.
+       
+         [`configs/track2/anon_BM3.yaml`](configs/track2/anon_BM3.yaml)  Compared to BM2, removes the prosody extractor and does not feed F0 into the synthesis model, thus keeping the original prosody.
+       
 
       
 2. Run anonymization and evaluation separately in two steps:
