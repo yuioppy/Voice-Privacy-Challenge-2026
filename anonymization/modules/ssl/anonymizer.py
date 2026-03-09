@@ -396,9 +396,7 @@ class SelectionBasedAnonymizationPipeline:
         print(f"Anonymization level: {anon_level}")
 
         current_spk = None
-        suffix = settings.get("anon_suffix", "")
         n_skip_exist = 0
-    
 
         for utt_id, wav_path in tqdm(data_to_process):
             # Determine speaker ID for caching
@@ -430,8 +428,8 @@ class SelectionBasedAnonymizationPipeline:
             except Exception as e:
                 print(f"\nError processing {utt_id}: {e}")
 
-        if n_skip_exist or n_skip_copy:
-            print(f"Skipped: {n_skip_exist} (already exist), {n_skip_copy} (copied from trials_f/m)")
+        if n_skip_exist:
+            print(f"Skipped: {n_skip_exist} (already exist)")
     
     def _select_speakers_enhanced(
         self,
