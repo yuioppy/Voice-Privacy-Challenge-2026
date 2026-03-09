@@ -168,8 +168,8 @@ if [ ! -f $mark ]; then
   make -j $nj src/espeak-ng src/speak-ng
   make -j $nj
 
-  make DESTDIR="$venv_dir" install
-
+  # make DESTDIR="$venv_dir" install
+  make install
   yes | cp -rf ${venv_dir}/usr/local/* ${venv_dir} || true
 
   echo "export ESPEAK_DATA_PATH=$venv_dir/share/espeak-ng-data" >> $env_sh
