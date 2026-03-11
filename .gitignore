@@ -13,6 +13,7 @@ log*
 *.pyc
 *_local.sh
 
+espeak-ng-1.52.0/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -166,6 +167,7 @@ activemq-data/
 .env
 .envrc
 .venv
+venv_*
 env/
 venv/
 ENV/

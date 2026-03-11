@@ -13,9 +13,9 @@ track=track2 #track1, track2
 if [ -n "$1" ]; then
   anon_config=$1
 else
-  anon_config=configs/$track/anon_BM1.yaml # BM1 anonymization costs 9 hours
+  #anon_config=configs/$track/anon_BM1.yaml # BM1 anonymization costs 9 hours
   #anon_config=configs/$track/anon_BM2.yaml # BM2 anonymization costs over one day
-  #anon_config=configs/$track/anon_BM3.yaml # BM3 anonymization costs over one day 
+  anon_config=configs/$track/anon_BM3.yaml # BM3 anonymization costs over one day 
 fi
 echo "Using config: $anon_config"
 
@@ -39,26 +39,48 @@ else
 fi
 echo $anon_suffix
 # Generate anonymized audio (multilang dev+test set & emotion_track2)
-python run_anonymization.py --config ${anon_config} ${force_compute}
+#python run_anonymization.py --config ${anon_config} ${force_compute}
 
 # Perform multilang dev+test & emotion_track2 pre evaluation using pretrained ASR/ASV/SER models ASR 1.5hours
 python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
 
-# Merge results
+#semi-informed evaluation for each language
+python run_evaluation.py --config $(dirname ${anon_config})/eval_post_en.yaml --overwrite "${eval_overwrite}" ${force_compute}
+python run_evaluation.py --config $(dirname ${anon_config})/eval_post_de.yaml --overwrite "${eval_overwrite}" ${force_compute}
+python run_evaluation.py --config $(dirname ${anon_config})/eval_post_es.yaml --overwrite "${eval_overwrite}" ${force_compute}
+python run_evaluation.py --config $(dirname ${anon_config})/eval_post_fr.yaml --overwrite "${eval_overwrite}" ${force_compute}
+
+
+
+# Merge results: eval_pre + eval_post_{en,de,es,fr}
 config_dir=$(dirname ${anon_config})
 results_summary_path_orig=$(eval_overwrite="${eval_overwrite}" config_dir="${config_dir}" python3 -c "
 import os, json
 from hyperpyyaml import load_hyperpyyaml
 overwrite = json.loads(os.environ.get('eval_overwrite', '{}'))
-f = open(os.environ['config_dir'] + '/eval_pre.yaml')
+config_dir = os.environ['config_dir']
+f = open(config_dir + '/eval_pre.yaml')
 print(load_hyperpyyaml(f, overwrite).get('results_summary_path', ''))
 ")
-
-
 results_exp=exp/results_summary/$track
 mkdir -p ${results_exp}
-# Only copy eval_pre results 
-cp "${results_summary_path_orig}" "${results_exp}/result_for_rank${anon_suffix}"
+# Merge eval_pre (results_orig) + eval_post_{en,de,es,fr} (results_anon) into result_for_rank
+{
+  cat "${results_summary_path_orig}"
+  echo
+  for lang in en de es fr; do
+    p=$(eval_overwrite="${eval_overwrite}" config_dir="${config_dir}" lang="${lang}" python3 -c "
+import os, json
+from hyperpyyaml import load_hyperpyyaml
+overwrite = json.loads(os.environ.get('eval_overwrite', '{}'))
+config_dir = os.environ['config_dir']
+lang = os.environ.get('lang', 'en')
+f = open(config_dir + '/eval_post_' + lang + '.yaml')
+print(load_hyperpyyaml(f, overwrite).get('results_summary_path', ''))
+")
+    [ -n "$p" ] && [ -f "$p" ] && cat "$p" && echo
+  done
+} > "${results_exp}/result_for_rank${anon_suffix}"
 # Copy CSV results (ASR=openai/whisper-large-v3, SER=emotion2vec, ASV=asv_ssl)
 [ -f "exp/openai/whisper-large-v3/results${anon_suffix}.csv" ] && cp "exp/openai/whisper-large-v3/results${anon_suffix}.csv" "${results_exp}/asr_results${anon_suffix}.csv"
 [ -f "exp/ser_emotion2vec/results${anon_suffix}.csv" ] && cp "exp/ser_emotion2vec/results${anon_suffix}.csv" "${results_exp}/ser_results${anon_suffix}.csv"
@@ -71,3 +93,7 @@ zip -r ${results_exp}/result_for_submission${anon_suffix}.zip \
   exp/ser_emotion2vec/results*${anon_suffix}.csv \
   exp/ser_emotion2vec/results_folds*${anon_suffix}.csv \
   exp/asv_ssl/results*${anon_suffix}.csv 2>/dev/null || true
+# Pack asv_anon_* dirs (track2: asv_anon_track2_<epochs>_<lang><suffix>)
+for d in exp/asv_anon_track2*${anon_suffix}; do
+  [ -d "$d" ] && find "$d" -maxdepth 1 -type f -exec zip -q ${results_exp}/result_for_submission${anon_suffix}.zip {} \; 2>/dev/null || true
+done
