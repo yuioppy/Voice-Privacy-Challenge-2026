@@ -242,7 +242,7 @@ Please see the [RESULTS folder](./results/track2) for the provided anonymization
 |--------|-------------|----|----|----|----|
 | `run_anonymization.py` | Generate anonymized audio (LibriSpeech dev+test, IEMOCAP dev+test, LibriSpeech-train-clean-360) | ~2h | ~13h | ~72h | ~1h |
 | `run_evaluation.py` (eval_pre.yaml) | ASR/ASV/SER on LibriSpeech dev+test & IEMOCAP dev+test using pretrained models | | | | |
-| `run_evaluation.py` (eval_post.yaml) | Train semi-informed ASV using anonymized LibriSpeech-360h, then evaluate on LibriSpeech dev+test |8-10h | | | |
+| `run_evaluation.py` (eval_post.yaml) | Train semi-informed ASV using anonymized LibriSpeech-360h, then evaluate on LibriSpeech dev+test |～10h | | | |
 
 #### Track 2
 
