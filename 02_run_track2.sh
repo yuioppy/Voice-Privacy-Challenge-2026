@@ -13,9 +13,9 @@ track=track2 #track1, track2
 if [ -n "$1" ]; then
   anon_config=$1
 else
-  #anon_config=configs/$track/anon_BM1.yaml # BM1 anonymization costs 9 hours
+  anon_config=configs/$track/anon_BM1.yaml # BM1 anonymization costs 9 hours
   #anon_config=configs/$track/anon_BM2.yaml # BM2 anonymization costs over one day
-  anon_config=configs/$track/anon_BM3.yaml # BM3 anonymization costs over one day 
+  #anon_config=configs/$track/anon_BM3.yaml # BM3 anonymization costs over one day 
 fi
 echo "Using config: $anon_config"
 
@@ -39,7 +39,7 @@ else
 fi
 echo $anon_suffix
 # Generate anonymized audio (multilang dev+test set & emotion_track2)
-#python run_anonymization.py --config ${anon_config} ${force_compute}
+python run_anonymization.py --config ${anon_config} ${force_compute}
 
 # Perform multilang dev+test & emotion_track2 pre evaluation using pretrained ASR/ASV/SER models ASR 1.5hours
 python run_evaluation.py --config $(dirname ${anon_config})/eval_pre.yaml --overwrite "${eval_overwrite}" ${force_compute}
