@@ -41,6 +41,31 @@ datasets:
     data: de_test
     enrolls: [_enrolls]
     trials: [_trials_mixed]
+  - name: train_english
+    data: train_english
+  - name: train_german
+    data: train_german
+  - name: train_spanish
+    data: train_spanish
+  - name: train_french
+    data: train_french
+  - name: ja_dev
+    data: ja_dev
+    enrolls: [_enrolls]
+    trials: [_trials_mixed]
+  - name: ja_test
+    data: ja_test
+    enrolls: [_enrolls]
+    trials: [_trials_mixed]
+  - name: cn_dev
+    data: cn_dev
+    enrolls: [_enrolls]
+    trials: [_trials_mixed]
+  - name: cn_test
+    data: cn_test
+    enrolls: [_enrolls]
+    trials: [_trials_mixed]
+
 
 models_dir:  exp/sttts_multi_models
 save_intermediate: true
@@ -73,7 +98,7 @@ modules:
     extraction_results_path: !ref <intermediate_dir>/original_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
     anon_results_path: !ref <intermediate_dir>/anon_speaker_embeddings/<modules[speaker_embeddings][vec_type]>
     anon_level_spk: []
-    anon_level_utt: [emodata_track2_dev, emodata_track2_test, en_dev, en_test, de_dev, de_test, fr_dev, fr_test, es_dev, es_test]
+    anon_level_utt: [emodata_track2_dev, emodata_track2_test, en_dev, en_test, de_dev, de_test, fr_dev, fr_test, es_dev, es_test, train_english, train_german, train_spanish, train_french, ja_dev, ja_test, cn_dev, cn_test]
 
   prosody:
     extractor_type: ims
