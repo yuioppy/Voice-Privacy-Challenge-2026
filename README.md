@@ -122,9 +122,8 @@ Please see the [RESULTS folder](./results/track1) for the provided anonymization
     
 1. Download data and models: ```bash 01_download_data_model_track2.sh```
 
-2. Run Track 2 (lazy-informed EER, WER, UAR): ```bash 02_run_track2.sh ```
+2. Run Track 2 (semi-informed EER, WER, UAR): ```bash 02_run_track2.sh ```
 
-3. Run Track 2 post to generate anonymized data:```bash 02_run_track2_post.sh```
 
 ## Anonymization and Evaluation
 There are two options:
