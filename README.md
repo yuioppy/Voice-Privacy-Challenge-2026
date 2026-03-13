@@ -260,14 +260,15 @@ Please see the [RESULTS folder](./results/track2) for the provided anonymization
 
 
 
-## Data submission
+## Data submission (To be updated)
+
 The anonymization and evaluation scripts should have generated the files and the directories with the explained format of `$anon_data_suffix` suffix.  
 For data submission, the following command submit everything given a `$anon_data_suffix` argument:
 ```
-VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ VPC_TEAM=TEAM_NAME ./03_upload_submission.sh $anon_data_suffix
+VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ VPC_TEAM=TEAM_NAME ./03_upload_submission_track1.sh $anon_data_suffix
+VPC_DROPBOX_KEY=XXX VPC_DROPBOX_SECRET=YYY VPC_DROPBOX_REFRESHTOKEN=ZZZ VPC_TEAM=TEAM_NAME ./03_upload_submission_track2.sh $anon_data_suffix
 ```
 `VPC_DROPBOX_KEY`, `VPC_DROPBOX_SECRET`, `VPC_DROPBOX_REFRESHTOKEN`, and `VPC_TEAM=TEAM_NAME` are sent individually to each team upon receiving their system description.  
-
 
 
 
@@ -281,7 +282,7 @@ For more details about the baseline and data, please see The VoicePrivacy 2026 C
 #### Training data
 
 #### Registration
-Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **Registration**.
+Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/T2ZHD1p3UD)**.
 
 
 ## Organizers (in alphabetical order)
