@@ -22,6 +22,8 @@ Please visit the [challenge website](https://www.voiceprivacychallenge.org/) for
 > [!IMPORTANT]  
 > The [IEMOCAP](https://sail.usc.edu/iemocap/iemocap_release.htm) corpus must be downloaded on your own by submitting a request at https://sail.usc.edu/iemocap/iemocap_release.htm. The waiting time may take up to 7-9 days.
 
+## Anonymization and Evaluation
+Please refer to [the anonymization and evaluation sections in the VPC2024 GitHub README.](https://github.com/Voice-Privacy-Challenge/Voice-Privacy-Challenge-2024/blob/main/README.md#:~:text=7%2D9%20days.-,Anonymization%20and%20Evaluation,-There%20are%20two)
 ## Results
 #### Note, that WER results are computed on the trials part
 The result file with all the metrics and all datasets for submission will be generated in:
