@@ -265,12 +265,12 @@ Participants are requested to register for the evaluation. Registration should b
 
 ## Organizers
 - Xiaoxiao Miao - Duke Kunshan University, China
-- Natalia Tomashenko - Inria, France
+- Natalia Tomashenko - Université de Lorraine, CNRS, Inria, LORIA, F-54000 Nancy, France
 - Ridwan Arefeen - Singapore Institute of Technology, Singapore
 - Sarina Meyer - University of Stuttgart, Germany
 - Michele Panariello - EURECOM, France
 - Xin Wang - NII, Japan
-- Emmanuel Vincent - Inria, France
+- Emmanuel Vincent - Université de Lorraine, CNRS, Inria, LORIA, F-54000 Nancy, France
 - Junichi Yamagishi - NII, Japan
 - Nicholas Evans - EURECOM, France
 - Massimiliano Todisco - EURECOM, France
