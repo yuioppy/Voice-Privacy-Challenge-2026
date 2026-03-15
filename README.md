@@ -263,17 +263,17 @@ For more details about the baseline and data, please see The [VoicePrivacy 2026 
 Participants are requested to register for the evaluation. Registration should be performed once only for each participating entity using the following form: **[Registration](https://forms.office.com/r/74BKeXBWTZ)**.
 
 
-## Organizers (in alphabetical order)
-- Ridwan Arefeen - Singapore Institute of Technology, Singapore
-- Nicholas Evans - EURECOM, France
-- Sarina Meyer - University of Stuttgart, Germany
+## Organizers
 - Xiaoxiao Miao - Duke Kunshan University, China
-- Michele Panariello - EURECOM, France
-- Massimiliano Todisco - EURECOM, France
 - Natalia Tomashenko - Inria, France
-- Emmanuel Vincent - Inria, France
+- Ridwan Arefeen - Singapore Institute of Technology, Singapore
+- Sarina Meyer - University of Stuttgart, Germany
+- Michele Panariello - EURECOM, France
 - Xin Wang - NII, Japan
+- Emmanuel Vincent - Inria, France
 - Junichi Yamagishi - NII, Japan
+- Nicholas Evans - EURECOM, France
+- Massimiliano Todisco - EURECOM, France
 
 Contact: organisers@lists.voiceprivacychallenge.org
 
