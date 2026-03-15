@@ -68,7 +68,7 @@ For the next evaluation step, you should replicate the corresponding directory s
 
 #### Step 2: Evaluation
 Evaluation metrics include:
-- Privacy: Equal error rate (EER) for ignorant, lazy-informed, and semi-informed attackers (only results from the semi-informed attacker will be used in the challenge ranking) 
+- Privacy: Equal error rate (EER) for ignorant and semi-informed attackers (only results from the semi-informed attacker will be used in the challenge ranking) 
 - Utility:
   - Word Error Rate (WER) by an automatic speech recognition (ASR) model (trained on LibriSpeech)
   - Unweighted Average Recall (UAR) by a speech emotion recognition (SER) model (trained on IEMOCAP).
