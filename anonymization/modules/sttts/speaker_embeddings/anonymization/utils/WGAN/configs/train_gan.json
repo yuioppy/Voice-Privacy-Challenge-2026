@@ -17,7 +17,7 @@
     "data_dim": [
         1,
         1,
-        192
+        128
     ],
     "activation": "leaky_relu",
     "num_workers": 8,
