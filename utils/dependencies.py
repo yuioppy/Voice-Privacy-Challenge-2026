@@ -52,6 +52,8 @@ def check_dependencies(requirements_file):
             # Handle standard package requirements
             try:
                 requirement = Requirement(line)
+                if requirement.marker and not requirement.marker.evaluate():
+                    continue
                 try:
                     installed_version = version(requirement.name)
                     if not parse(installed_version) in requirement.specifier:
@@ -77,4 +79,3 @@ def check_dependencies(requirements_file):
 
     if len(error_msg) > 0:
         raise ModuleNotFoundError(f'{error_msg}--Make sure to install {requirements_file} to run this code!--')
-

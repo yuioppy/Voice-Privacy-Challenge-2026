@@ -1,6 +1,7 @@
 # We need to set CUDA_VISIBLE_DEVICES before we import Pytorch, so we will read all arguments directly on startup
 from argparse import ArgumentParser
 import os
+from pathlib import Path
 parser = ArgumentParser()
 
 def _str_to_bool(v):
@@ -10,7 +11,7 @@ def _str_to_bool(v):
         return v.lower() in ('true', 'yes', '1')
     return bool(v)
 
-parser.add_argument('--config', default='anon_config.yaml')
+parser.add_argument('--config', default='configs/track1/anon_mcadams.yaml')
 parser.add_argument('--gpu_ids', default='0')
 parser.add_argument('--force_compute', default='false', type=str)
 args = parser.parse_args()
@@ -22,7 +23,89 @@ if 'CUDA_VISIBLE_DEVICES' not in os.environ:  # do not overwrite previously set 
 else: # CUDA_VISIBLE_DEVICES more important than the gpu_ids arg
     args.gpu_ids = ",".join([ str(i) for i, _ in enumerate(os.environ['CUDA_VISIBLE_DEVICES'].split(","))])
 
-from pathlib import Path
+config_path = Path(args.config)
+if not config_path.exists():
+    parser.error(
+        f"Config file not found: {config_path}. "
+        "Use --config with one of the YAML files in configs/track1 or configs/track2."
+    )
+
+def _get_dataset_paths(config):
+    datasets = {}
+    data_dir = Path(config.get('data_dir', 'data')).expanduser()
+    for dataset in config['datasets']:
+        no_sub = True
+        for subset_name in ['trials', 'enrolls']:
+            if subset_name in dataset:
+                for subset in dataset[subset_name]:
+                    dataset_name = f'{dataset["data"]}{subset}'
+                    datasets[dataset_name] = data_dir / dataset_name
+                    no_sub = False
+        if no_sub:
+            dataset_name = dataset["data"]
+            datasets[dataset_name] = data_dir / dataset_name
+    return datasets
+
+
+def _validate_dataset_inputs(config, config_path):
+    datasets = _get_dataset_paths(config)
+    missing = [f'{name}: {path / "wav.scp"}' for name, path in datasets.items()
+               if not (path / 'wav.scp').exists()]
+    missing_audio = []
+    for name, path in datasets.items():
+        wav_scp = path / 'wav.scp'
+        if not wav_scp.exists():
+            continue
+        checked = 0
+        missing_count = 0
+        first_missing = None
+        with open(wav_scp, 'r', encoding='utf-8') as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                checked += 1
+                utt, wav_ref = line.strip().split(maxsplit=1)
+                if wav_ref.endswith('|'):
+                    candidates = [
+                        token for token in wav_ref[:-1].strip().split()
+                        if Path(token).suffix.lower() in {'.wav', '.flac', '.mp3'}
+                    ]
+                    if not candidates:
+                        continue
+                    wav_ref = candidates[-1]
+                if not Path(wav_ref).expanduser().exists():
+                    missing_count += 1
+                    if first_missing is None:
+                        first_missing = f'{utt}: {wav_ref}'
+        if missing_count:
+            missing_audio.append(f'{name}: {missing_count}/{checked} missing audio files, first missing: {first_missing}')
+
+    if not missing and not missing_audio:
+        return
+
+    setup_hint = (
+        "Run `bash 01_download_data_model_track1.sh` first. "
+        "For Track 1, IEMOCAP must also be downloaded separately and linked to `data/IEMOCAP/wav`."
+        if 'track1' in config_path.parts
+        else "Run `bash 01_download_data_model_track2.sh` first."
+        if 'track2' in config_path.parts
+        else "Prepare the configured data directories before running anonymization."
+    )
+    parser.error(
+        "Missing required input files for configured datasets:\n  "
+        + "\n  ".join(missing + missing_audio)
+        + f"\n{setup_hint}"
+    )
+
+
+try:
+    from hyperpyyaml import load_hyperpyyaml
+except ModuleNotFoundError as exc:
+    parser.error(f"{exc}. Install project requirements before running anonymization.")
+
+with open(config_path, 'r') as f:
+    _validate_dataset_inputs(load_hyperpyyaml(f), config_path)
+
 import subprocess
 import sys
 import torch
@@ -58,7 +141,7 @@ def check_dependencies_in_venv(requirements_file, venv_dir):
 
 if __name__ == '__main__':
 
-    config = parse_yaml(Path(args.config))
+    config = parse_yaml(config_path)
 
     # For isolated-venv pipelines: run install first (creates venv), then re-exec with that venv
     if config['pipeline'] in ('sttts', 'sttts_multi'):

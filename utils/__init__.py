@@ -1,10 +1,6 @@
 # Apply torchaudio compatibility patch before any speechbrain imports
 try:
-    import torchaudio
-    if not hasattr(torchaudio, 'list_audio_backends'):
-        def list_audio_backends():
-            return ['soundfile', 'sox', 'ffmpeg']
-        torchaudio.list_audio_backends = list_audio_backends
+    from . import torchaudio_compat  # noqa: F401
 except ImportError:
     pass  # torchaudio may not be installed yet
 

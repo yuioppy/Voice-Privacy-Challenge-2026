@@ -4,12 +4,25 @@ set -e
 
 source env.sh
 
+download_file() {
+    local output=$1
+    local url=$2
+    if command -v wget >/dev/null 2>&1; then
+        wget -c -O "$output" "$url"
+    elif command -v curl >/dev/null 2>&1; then
+        curl -L -C - -o "$output" "$url"
+    else
+        echo "Neither wget nor curl is available. Please install one of them."
+        exit 1
+    fi
+}
+
 # librispeech_corpus=PATH_TO_Librispeech
 # iemocap_corpus=PATH_TO_IEMOCAP
 
 if [ ! -d "data/libri_dev" ]; then
     echo "Downloading ..."
-    wget -O track1_evaldata.zip https://duke.app.box.com/shared/static/37dg9nzq5gwe254d6dhxgngk2g8dcuzz
+    download_file track1_evaldata.zip https://duke.app.box.com/shared/static/37dg9nzq5gwe254d6dhxgngk2g8dcuzz
     unzip track1_evaldata.zip
 fi
 
@@ -31,17 +44,19 @@ if [ ! -d $check ]; then
     fi
 fi
 #Download LibriSpeech-360
-if [ ! -d $check ]; then
+if [ ! -d $check ] && [ "$SKIP_TRAIN_CLEAN_360" != "1" ]; then
     echo "Download train-clean-360..."
     mkdir -p corpora
     cd corpora
     if [ ! -f train-clean-360.tar.gz ] ; then
         echo "Download train-clean-360..."
-        wget --no-check-certificate https://www.openslr.org/resources/12/train-clean-360.tar.gz
+        download_file train-clean-360.tar.gz https://www.openslr.org/resources/12/train-clean-360.tar.gz
     fi
     echo "Unpacking train-clean-360"
     tar -xzf train-clean-360.tar.gz
     cd ../
+elif [ ! -d $check ]; then
+    echo "Skipping train-clean-360 download because SKIP_TRAIN_CLEAN_360=1"
 fi
 
 
@@ -49,7 +64,7 @@ model=asr
 if [ ! -d "exp/$model" ]; then
     if [ ! -f .${model}.zip ]; then
         echo "Download pretrained $model models pre-trained..."
-        wget -O ${model}.zip https://duke.app.box.com/shared/static/2pfagrs17mtcw2os2roc66svg9fs56j2
+        download_file ${model}.zip https://duke.app.box.com/shared/static/2pfagrs17mtcw2os2roc66svg9fs56j2
         mv ${model}.zip .${model}.zip
     fi
     echo "Unpacking pretrained evaluation models"
@@ -60,7 +75,7 @@ model=ser
 if [ ! -d "exp/$model" ]; then
     if [ ! -f .${model}.zip ]; then
         echo "Download pretrained $model models pre-trained..."
-        wget -O ${model}.zip https://duke.app.box.com/shared/static/0j6t1pyjm8zkjnifee7v8q3o2zvk7mkg
+        download_file ${model}.zip https://duke.app.box.com/shared/static/0j6t1pyjm8zkjnifee7v8q3o2zvk7mkg
         mv ${model}.zip .${model}.zip
     fi
     echo "Unpacking pretrained evaluation models"
@@ -86,7 +101,7 @@ if [ ! -d "exp/$model" ]; then
     cd exp
     if [ ! -f .${model}.zip ]; then
         echo "Download pretrained $model models pre-trained..."
-        wget -O ${model}.zip https://duke.app.box.com/shared/static/na6grb7akap4ze66stiazp2azw4zb1f1
+        download_file ${model}.zip https://duke.app.box.com/shared/static/na6grb7akap4ze66stiazp2azw4zb1f1
         mv ${model}.zip .${model}.zip
     fi
     echo "Unpacking pretrained evaluation models"
